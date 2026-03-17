@@ -1,0 +1,4 @@
+histograma normalizado
+fazer o acumulado
+número de pixels de cada nível cinza(nk) -> histograma
+Função de distribuição de probabilidade[pr(kr)] -> nk/total , onde total=256*256

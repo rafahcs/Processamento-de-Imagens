@@ -1,0 +1,4 @@
+gera a imagem tons de cinza
+pega r1 e r2 do histograma e gera função
+gera imagem melhorada
+gera histograma imagem melhorada
