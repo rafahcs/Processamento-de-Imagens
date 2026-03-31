@@ -1,2 +1,2 @@
 # Processamento-de-Imagens
-Códigos das aulas da disciplina de processamento de imagens
+Códigos das aulas da disciplina de Processamento de Imagens 2026.1
