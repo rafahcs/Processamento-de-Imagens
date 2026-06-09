@@ -11,10 +11,10 @@ def escolheMask(cinza):
     print("1, 2 ou 3")
     escolha = input()
 
-    if escolha == 1:
+    if escolha == "1":
         mask1 = np.ones((3,3), dtype=np.int32) / 9.0
         return convolucao(cinza, mask1)
-    elif escolha == 2:
+    elif escolha == "2":
         mask2 = np.array([
             [1, 1, 1],
             [1, 1, 1],
