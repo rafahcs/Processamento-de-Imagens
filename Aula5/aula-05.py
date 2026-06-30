@@ -1,8 +1,10 @@
 import cv2
 import numpy
 import matplotlib.pyplot as plt
-foto = 'entrada2.jpg'
+foto = 'foto.jpg'
 imagem = cv2.imread(foto)
+if imagem is None:
+    raise FileNotFoundError(f"Não foi possível abrir a imagem: {foto}")
 
 ###################################
 

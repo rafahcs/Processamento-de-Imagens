@@ -2,15 +2,17 @@
 import cv2
 import numpy
 import matplotlib.pyplot as plt
-foto = 'entrada2.jpg'
+foto = 'foto.jpg'
 imagem = cv2.imread(foto)
+if imagem is None:
+    raise FileNotFoundError(f"Não foi possível abrir a imagem: {foto}")
 
 ###################################
 
 def deixaCinza (IMG):
-    cinzas = numpy.zeros((imagem.shape[0], imagem.shape[1]), dtype = numpy.uint8)
-    for i in range (imagem.shape[0]):
-        for j in range (imagem.shape[1]):
+    cinzas = numpy.zeros((IMG.shape[0], IMG.shape[1]), dtype = numpy.uint8)
+    for i in range (IMG.shape[0]):
+        for j in range (IMG.shape[1]):
             cinzas[i][j] = (IMG[i][j].sum()//3)
     cv2.imshow('Imagem em Tons de Cinza', cinzas)
     cv2.waitKey(0)
@@ -29,14 +31,16 @@ def criaHistograma (IMG):
     plt.title('Histograma dos Pixels da Imagem')
     plt.bar(pixel, histCinza, color='gray')
     plt.show()
+    return histCinza
 
 ###################################
 ###################################
 
 def normalizacao (IMG):
+    hist = criaHistograma(IMG)
     normalizada = [0]*256
     for i in range (256):
-        normalizada[i] = (criaHistograma(IMG))/((IMG.shape[0])*(IMG.shape[1]))
+        normalizada[i] = hist[i]/((IMG.shape[0])*(IMG.shape[1]))
     pixel = [0]*256
     for i in range (256):
         pixel[i]=i
@@ -87,6 +91,7 @@ def equalizacao (IMG, MPMT):
     criaHistograma(equalizada)
     cv2.imshow('Imagem Equalizada', equalizada)
     cv2.waitKey(0)
+    return equalizada
 
 ###################################
 ###################################
