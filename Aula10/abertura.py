@@ -92,6 +92,7 @@ def dilatacao5x3(preto_branco):
 
 aberta = dilatacao5x3(result)
 
+cv2.imshow("imagem original", imagem)
 cv2.imshow("erosao", result)
 cv2.imshow("abertura", aberta)
 
