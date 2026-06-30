@@ -3,7 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 foto = 'foto.jpg'
-imagem = cv2.imread(foto)
+imagem = cv2.imread(foto, cv2.IMREAD_GRAYSCALE)
+
+if imagem is None:
+    raise FileNotFoundError(f"Imagem não encontrada: {foto}")
 
 ###################################
 
@@ -73,7 +76,7 @@ def acumulacao (NRML):
 def mapeamento (ACML):
     mapa = [0]*256
     for i in range (256):
-        mapa[i] = round(ACML[i]*255)
+        mapa[i] = int(np.clip(round(ACML[i]*255), 0, 255))
     return mapa
 
 ###################################
@@ -90,6 +93,13 @@ def equalizacao (IMG, MPMT):
 
 ###################################
 ###################################
+
+def mostrar_imagem(titulo, img):
+    cv2.namedWindow(titulo, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(titulo, 800, 600)
+    cv2.imshow(titulo, img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 newHistCinza = [0]*256
 for i in range (256):
@@ -215,8 +225,8 @@ for i in range (256):
 equaliza = np.zeros((imagem.shape[0], imagem.shape[1]), dtype = np.uint8)
 for i in range (imagem.shape[0]):
     for j in range (imagem.shape[1]):
-        equaliza[i][j] = mapeamento[equaliza[i][j]]
-cv2.imshow("Mapeamento", equaliza)
+        equaliza[i][j] = np.uint8(np.clip(mapeamento[imagem[i][j]], 0, 255))
+mostrar_imagem("Mapeamento", equaliza)
 
 #cria o eixo x e nomeia o eixo x e y
 histEqlz = [0]*256
@@ -242,14 +252,8 @@ for i in range (256):
 newEqualiza = np.zeros((imagem.shape[0], imagem.shape[1]), dtype = np.uint8)
 for i in range (imagem.shape[0]):
     for j in range (imagem.shape[1]):
-        if mapeamento[equaliza[i][j]] == newMapeamento[equaliza[i][j]]:
-            newEqualiza[i][j] = mapeamento[equaliza[i][j]]
-        else:
-            if mapeamento[equaliza[i][j]] < newMapeamento[equaliza[i][j]]:
-                newEqualiza[i][j] = newMapeamento[equaliza[i][j]]
-            else:
-                newEqualiza[i][j] = newMapeamento[(equaliza[i][j])-1]
-cv2.imshow("Novo Mapeamento", newEqualiza)
+        newEqualiza[i][j] = np.uint8(np.clip(newMapeamento[imagem[i][j]], 0, 255))
+mostrar_imagem("Novo Mapeamento", newEqualiza)
 
 #cria o eixo x e nomeia o eixo x e y
 newHistEqlz = [0]*256
@@ -268,5 +272,5 @@ plt.show()
 ###################################
 ###################################
 
-cv2.waitKey(0)
+cv2.destroyAllWindows()
 #cv2.imwrite("im_eqlz_espcf.jpg", equali
