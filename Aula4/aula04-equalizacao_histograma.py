@@ -1,36 +1,51 @@
-import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-foto = "foto.jpg"
-imagem = cv2.imread(foto)
 
-cinzas = np.zeros((imagem.shape[0], imagem.shape[1]), dtype = np.uint8)
-for i in range (imagem.shape[0]):
-    for j in range (imagem.shape[1]):
-        cinzas[i][j] = (imagem[i][j].sum() // 3)
+def carregar_imagem(caminho):
+    imagem = cv2.imread(caminho)
+    if imagem is None:
+        raise FileNotFoundError(f"Não foi possível carregar a imagem: {caminho}")
+    return imagem
 
-cv2.imshow("imagem tons de cinza", cinzas)
-cv2.waitKey(0)
 
-def criaHistograma(imagem):
-    histCinza = [0]*256
-    for i in range (imagem.shape[0]):
-        for j in range (imagem.shape[1]):
-            histCinza[cinzas[i][j]]+=1
+def converter_para_cinza(imagem):
+    return cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
 
-    #cria o eixo x e nomeia o eixo x e y
-    pixel = [0]*256
-    for i in range (256):
-        pixel[i]=i
-    plt.xlabel('Tom de Cinza')
-    plt.ylabel('Quantidade')
 
-    #nomeia e plota o histograma
-    plt.title('Histograma de Tons de Cinza')
-    plt.bar(pixel, histCinza, color='gray')
+def mostrar_imagem(imagem, titulo):
+    plt.figure(figsize=(6, 6))
+    plt.imshow(imagem, cmap="gray")
+    plt.title(titulo)
+    plt.axis("off")
     plt.show()
 
-def expansao(imagem):
 
-    criaHistograma(imagem)
+def mostrar_histograma(imagem, titulo):
+    hist = cv2.calcHist([imagem], [0], None, [256], [0, 256]).flatten()
+
+    plt.figure(figsize=(8, 4))
+    plt.title(titulo)
+    plt.xlabel("Tom de cinza")
+    plt.ylabel("Quantidade de pixels")
+    plt.bar(range(256), hist, color="gray")
+    plt.xlim([0, 255])
+    plt.tight_layout()
+    plt.show()
+
+
+def main():
+    imagem_colorida = carregar_imagem("foto.jpg")
+    imagem_cinza = converter_para_cinza(imagem_colorida)
+    imagem_equalizada = cv2.equalizeHist(imagem_cinza)
+
+    mostrar_imagem(imagem_cinza, "Imagem em tons de cinza")
+    mostrar_imagem(imagem_equalizada, "Imagem equalizada")
+    mostrar_histograma(imagem_cinza, "Histograma da imagem em tons de cinza")
+    mostrar_histograma(imagem_equalizada, "Histograma da imagem equalizada")
+
+    
+
+
+if __name__ == "__main__":
+    main()
