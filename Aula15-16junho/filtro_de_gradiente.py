@@ -5,20 +5,16 @@ foto = "foto.png"
 imagem = cv2.imread(foto)
 
 def aplicar_convolucao(imagem, mascara):
-    """
-    Aplica uma máscara (kernel) a uma imagem 2D usando convolução manual.
-    """
     lin_img, col_img = imagem.shape
     lin_mask, col_mask = mascara.shape
     
-    # Calcula o preenchimento (padding) necessário para manter o tamanho da imagem
     pad_lin = lin_mask // 2
     pad_col = col_mask // 2
     
-    # Cria uma imagem com padding de zeros
+    # tratamento das bordas com 0
     img_pad = np.zeros((lin_img + 2 * pad_lin, col_img + 2 * pad_col))
     
-    # Para máscara 2x2, o padding ideal na direita/base precisa ser ajustado
+    # Para máscara 2x2
     if lin_mask == 2 and col_mask == 2:
         img_pad = np.zeros((lin_img + 1, col_img + 1))
         img_pad[0:lin_img, 0:col_img] = imagem
@@ -28,7 +24,7 @@ def aplicar_convolucao(imagem, mascara):
     # Imagem de saída
     resultado = np.zeros_like(imagem, dtype=float)
     
-    # Aplica a máscara deslizando-a sobre a imagem
+    # Aplica a máscara 
     for i in range(lin_img):
         for j in range(col_img):
             regiao = img_pad[i : i + lin_mask, j : j + col_mask]
@@ -36,16 +32,12 @@ def aplicar_convolucao(imagem, mascara):
             
     return resultado
 
-def calcular_magnitude(gx, gy):
-    """
-    Calcula a magnitude do gradiente combinando as respostas em X e Y.
-    """
+def calcular_gradiente(gx, gy):
     magnitude = np.sqrt(gx**2 + gy**2)
-    # Normaliza para o intervalo 0-255 e converte para inteiro de 8 bits
     magnitude = np.clip(magnitude, 0, 255).astype(np.uint8)
     return magnitude
 
-# 1. Carregar a imagem em tons de cinza
+# Transforma a imagem em tons de cinza
 def deixaCinza(imag):
     if len(imag.shape) < 3:
         return imag
@@ -59,19 +51,16 @@ img_cinza = deixaCinza(imagem)
 if img_cinza is None:
     print("Erro: Imagem não encontrada. Verifique o caminho.")
 else:
-    # Converter a imagem original para float para evitar perda de dados nos cálculos
     img_float = img_cinza.astype(float)
-
-    # DEFINIÇÃO DAS MÁSCARAS
     
-    # Máscaras 2x2 (Primeira imagem)
+    # Máscaras 2x2 
     Gx_2x2 = np.array([[1, -1], 
                        [0,  0]])
     
     Gy_2x2 = np.array([[ 1,  0], 
                        [-1,  0]])
 
-    # Máscaras 3x3 (Segunda imagem - Filtro de Prewitt)
+    # Máscaras 3x3 
     Gx_3x3 = np.array([[-1, -1, -1], 
                        [ 0,  0,  0], 
                        [ 1,  1,  1]])
@@ -80,24 +69,21 @@ else:
                        [-1,  0,  1], 
                        [-1,  0,  1]])
 
-    # APLICAÇÃO DOS FILTROS
-    
+    # Aplicação dos filtros
     print("Aplicando filtros 2x2...")
     res_x_2x2 = aplicar_convolucao(img_float, Gx_2x2)
     res_y_2x2 = aplicar_convolucao(img_float, Gy_2x2)
-    gradiente_2x2 = calcular_magnitude(res_x_2x2, res_y_2x2)
+    gradiente_2x2 = calcular_gradiente(res_x_2x2, res_y_2x2)
 
     print("Aplicando filtros 3x3...")
     res_x_3x3 = aplicar_convolucao(img_float, Gx_3x3)
     res_y_3x3 = aplicar_convolucao(img_float, Gy_3x3)
-    gradiente_3x3 = calcular_magnitude(res_x_3x3, res_y_3x3)
+    gradiente_3x3 = calcular_gradiente(res_x_3x3, res_y_3x3)
 
-    # EXIBIÇÃO DOS RESULTADOS
-    
+    # imagens
     cv2.imshow("Imagem Original", img_cinza)
     cv2.imshow("Gradiente 2x2", gradiente_2x2)
     cv2.imshow("Gradiente 3x3", gradiente_3x3)
 
-    # Funções necessárias para manter as janelas do imshow abertas
     cv2.waitKey(0)
     cv2.destroyAllWindows()
